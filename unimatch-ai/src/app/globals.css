@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050711;
+  --foreground: #eef4ff;
 }
 
 @theme inline {
@@ -12,15 +12,49 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+select option {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+::selection {
+  background: rgba(103, 232, 249, 0.32);
+  color: #ffffff;
+}
+
+section,
+form,
+#results {
+  scroll-margin-top: 88px;
+}
+
+.premium-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.premium-sheen {
+  background:
+    linear-gradient(115deg, rgba(34, 211, 238, 0.12), transparent 28%),
+    linear-gradient(245deg, rgba(16, 185, 129, 0.1), transparent 34%),
+    linear-gradient(180deg, transparent 0%, rgba(245, 158, 11, 0.06) 62%, transparent 100%);
 }
