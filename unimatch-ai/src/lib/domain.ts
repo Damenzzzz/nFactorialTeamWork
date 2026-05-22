@@ -30,6 +30,7 @@ export interface Program {
   id: string;
   universityId: string;
   name: string;
+  description: string;
   degreeLevel: DegreeLevel;
   field: string;
   language: string;

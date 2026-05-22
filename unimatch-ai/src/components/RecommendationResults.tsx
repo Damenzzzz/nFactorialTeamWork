@@ -14,14 +14,12 @@ import { formatCurrency, formatDeadline } from "@/lib/frontend/format";
 import { cn } from "@/lib/utils";
 
 interface RecommendationResultsProps {
-  dataSource?: string;
   error?: string;
   loading?: boolean;
   recommendations: Recommendation[];
 }
 
 export function RecommendationResults({
-  dataSource,
   error,
   loading = false,
   recommendations,
@@ -45,9 +43,9 @@ export function RecommendationResults({
   if (recommendations.length === 0) {
     return (
       <EmptyState
-        description="Submit a profile to produce a ranked decision report from the recommendation route."
+        description="Submit your profile to see ranked recommendations, risks, missing requirements, and next steps."
         icon={Target}
-        title="No recommendation report yet"
+        title="No admission report yet"
       />
     );
   }
@@ -56,12 +54,12 @@ export function RecommendationResults({
     <div className="space-y-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm text-slate-400">Ranked decision report</p>
+          <p className="text-sm text-slate-400">Premium admission report</p>
           <h3 className="mt-1 text-2xl font-semibold text-white">
-            {recommendations.length} generated matches
+            {recommendations.length} ranked matches
           </h3>
         </div>
-        {dataSource ? <Badge tone="emerald">Data source: {dataSource}</Badge> : null}
+        <Badge tone="emerald">Personalized shortlist</Badge>
       </div>
 
       {recommendations.slice(0, 6).map((recommendation, index) => (

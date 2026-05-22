@@ -97,16 +97,16 @@ export function ProfileForm({
         <div>
           <Badge tone="emerald">Student profile</Badge>
           <h3 className="mt-3 text-2xl font-semibold text-white">
-            Admission fit scanner
+            Admission fit profile
           </h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
-            The recommendation engine weighs academic fit, affordability,
-            location preferences, scholarship need, and missing requirements.
+            Tell UniMatch AI what you want to study, where you want to go, and
+            which requirements you already meet.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-100">
           <CheckCircle2 aria-hidden="true" className="size-4" />
-          Seed data safe
+          Ready to rank
         </div>
       </div>
 
@@ -300,7 +300,7 @@ export function ProfileForm({
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-400">
-          Recommendations are advisory and use the available seed contract.
+          Results are planning guidance. Always verify details with each university.
         </p>
         <button
           className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 text-sm font-semibold text-slate-950 shadow-lg shadow-black/20 transition hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
@@ -312,7 +312,7 @@ export function ProfileForm({
           ) : (
             <ArrowRight aria-hidden="true" className="size-4" />
           )}
-          Generate recommendations
+          Calculate fit
         </button>
       </div>
     </form>

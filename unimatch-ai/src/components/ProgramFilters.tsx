@@ -1,7 +1,6 @@
 "use client";
 
 import { Filter, RotateCcw, Search } from "lucide-react";
-import { Badge } from "@/components/Badge";
 import type { DegreeLevel, ProgramFilters as ProgramFiltersType } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 
@@ -40,14 +39,13 @@ export function ProgramFilters({
             <Filter aria-hidden="true" className="size-5" />
           </span>
           <div>
-            <h3 className="text-xl font-semibold text-white">Catalog control panel</h3>
+            <h3 className="text-xl font-semibold text-white">Find programs faster</h3>
             <p className="mt-1 text-sm text-slate-400">
-              {loading ? "Scanning programs" : `${resultCount} matching programs`}
+              {loading ? "Searching programs" : `${resultCount} matching programs`}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge tone="cyan">GET /api/programs</Badge>
           <button
             className="inline-flex h-9 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.055] px-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[0.09] focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950"
             disabled={loading}
@@ -95,7 +93,7 @@ export function ProgramFilters({
           </select>
         </FilterField>
 
-        <FilterField label="Degree">
+        <FilterField label="Degree level">
           <select
             aria-label="Filter by degree level"
             className={controlClass}
@@ -114,21 +112,21 @@ export function ProgramFilters({
           </select>
         </FilterField>
 
-        <FilterField label="Budget">
+        <FilterField label="Max tuition">
           <input
             aria-label="Filter by maximum tuition"
             className={controlClass}
             disabled={loading}
             min="0"
             onChange={(event) => update({ maxTuition: numberOrUndefined(event.target.value) })}
-            placeholder="Max USD"
+            placeholder="Annual USD"
             step="500"
             type="number"
             value={filters.maxTuition ?? ""}
           />
         </FilterField>
 
-        <FilterField label="IELTS">
+        <FilterField label="IELTS score">
           <input
             aria-label="Filter by IELTS score"
             className={controlClass}
@@ -143,7 +141,7 @@ export function ProgramFilters({
           />
         </FilterField>
 
-        <FilterField label="Funding">
+        <FilterField label="Scholarships">
           <button
             aria-pressed={Boolean(filters.scholarshipOnly)}
             className={cn(
@@ -157,7 +155,7 @@ export function ProgramFilters({
             type="button"
           >
             <Search aria-hidden="true" className="size-4" />
-            Scholarship
+            Scholarship only
           </button>
         </FilterField>
       </div>

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "UniMatch AI | University admission advisor",
   description:
-    "AI-native university admission matching with ranked program recommendations and seed-data fallback.",
+    "Find universities, compare programs, calculate admission fit, and build a smarter application shortlist.",
 };
 
 export default function RootLayout({
