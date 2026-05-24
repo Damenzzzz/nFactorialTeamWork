@@ -155,15 +155,4 @@ Vercel deployment steps:
 - The current data repository is local-first; Supabase is detected for configuration status but no Supabase data adapter is connected.
 - Playwright tests cover the main desktop Chromium flows; visual regression, mobile E2E, and cross-browser suites are not included yet.
 - Live deployment URL is still TODO.
-
-## Submission Checklist
-
-- [ ] GitHub repository
-- [ ] Deployed app link
-- [x] README
-- [x] WORKFLOW
-- [x] `ai-rules/`
-- [x] Subagent docs
-- [ ] Evidence screenshots
-- [x] Tests/build results
-- [ ] Video demo
+]
