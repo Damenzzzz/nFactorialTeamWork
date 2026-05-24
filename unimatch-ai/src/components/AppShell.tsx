@@ -237,7 +237,7 @@ export function AppShell() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
+    <div className="relative min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <div className="pointer-events-none fixed inset-0 bg-[linear-gradient(135deg,#050711_0%,#081322_46%,#11130b_100%)]" />
       <div className="pointer-events-none fixed inset-0 premium-grid opacity-35" />
       <div className="pointer-events-none fixed inset-0 premium-sheen opacity-70" />
