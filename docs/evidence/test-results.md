@@ -21,7 +21,7 @@ Final E2E run:
 
 ```text
 Running 6 tests using 6 workers
-6 passed (11.5s)
+6 passed (15.2s)
 ```
 
 Covered tests:

@@ -18,14 +18,13 @@ Optional server-side variables:
 
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
-- `SUPABASE_SERVICE_ROLE_KEY`
 
-Optional browser-safe Supabase variables:
+Optional Supabase config-status variables currently detected by the app:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-Do not commit `.env.local`. Do not place service-role or OpenAI keys in public variables.
+Do not commit `.env.local`. Do not place OpenAI keys in public variables such as `NEXT_PUBLIC_OPENAI_API_KEY`.
 
 ## Pre-Deploy Checks
 

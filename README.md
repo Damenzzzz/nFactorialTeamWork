@@ -1,345 +1,169 @@
 # UniMatch AI
 
-UniMatch AI is a solo role-based sprint project for an AI-native university admission advisor. The repository is organized to show how one developer moves through four delivery phases without pretending there is a team:
+UniMatch AI is an AI-powered university admission platform that helps students search universities and programs, filter options by academic and financial constraints, calculate admission fit, compare shortlisted programs, and get AI-assisted admission guidance. The product also includes AI-powered profile parsing, smart search, program fit explanations, comparison summaries, and admission roadmaps grounded in the local program catalog.
 
-1. Frontend Developer
-2. Backend Developer
-3. AI Engineer
-4. QA Engineer & Workflow Master
+## Live Demo
 
-The app lives in [`unimatch-ai`](./unimatch-ai). The root repository stores the workflow, AI role rules, and evidence artifacts used to prove the implementation.
+Live Demo: TODO - add Vercel link after deployment
 
-## Current State
+## Repository Structure
 
-This repository contains a working Next.js App Router admissions advisor application plus planning and evidence artifacts. The app now includes a student-facing admissions interface, local catalog data, backend recommendation APIs, AI-native workflow features, a tool-based AI advisor route, and Playwright E2E coverage.
+- `unimatch-ai/` - Next.js application with the student-facing UI, API routes, local catalog data, AI advisor layer, and Playwright tests.
+- `ai-rules/` - role-specific AI assistant rules used during the solo development workflow.
+- `docs/subagents/` - Codex subagent instruction files for frontend, backend, AI advisor, and QA workflow phases.
+- `docs/evidence/` - workflow, testing, and deployment evidence checklists and results.
+- `WORKFLOW.md` - final process documentation for the solo role-based workflow.
+- `AGENTS.md` - repository-level Codex operating guidance.
 
-Implemented application pieces:
+## Features
 
-- `unimatch-ai/`: Next.js App Router app with TypeScript and Tailwind CSS
-- `GET /api/health`: reports service status, data-source mode, and AI availability without exposing secrets
-- `GET /api/programs`: returns filterable catalog programs with requirements
-- `POST /api/recommendations`: returns ranked matches using local recommendation logic
-- `POST /api/advisor`: returns structured advisor answers using internal tools and OpenAI SDK tool-calling when configured
-- `GET /api/advisor/status`: reports AI configuration status without returning secrets
-- `POST /api/ai/profile-parser`: extracts editable profile fields from a pasted study goal
-- `POST /api/ai/smart-search`: translates natural-language catalog search into filters
-- `POST /api/ai/program-insight`: explains fit for a selected program
-- `POST /api/ai/compare-summary`: summarizes shortlisted program tradeoffs
-- `POST /api/ai/admission-roadmap`: generates a student-facing application roadmap
-- local deterministic advisor fallback when `OPENAI_API_KEY` is absent
-- Playwright E2E tests for homepage, catalog, filters, recommendations, compare, and advisor flow
-- `ai-rules/`: role-specific AI execution rules
-- `docs/evidence/`: implementation evidence and verification notes
-- `README.md`: product and implementation plan
-- `WORKFLOW.md`: solo role-based sprint workflow
+- Premium student-facing admissions interface with responsive dark SaaS styling.
+- University and program catalog backed by curated local seed data.
+- Catalog filters for country, field, degree level, tuition, IELTS score, and scholarship availability.
+- Student admission profile form for intended field, degree level, GPA, IELTS, SAT, budget, preferred countries, and scholarship preference.
+- Admission fit recommendation flow with ranked matches, match scores, fit reasons, risks, missing requirements, and next steps.
+- Compare/shortlist workflow for up to three programs.
+- AI advisor panel for catalog-grounded admission questions.
+- AI profile parser that can fill profile fields from a pasted study goal.
+- AI smart search that converts natural-language search into catalog filters.
+- AI program fit explanation on program cards.
+- AI comparison brief for shortlisted programs.
+- AI admission roadmap after recommendation results.
+- Local catalog fallback behavior when external services are not configured.
+- OpenAI integration when `OPENAI_API_KEY` is configured.
+- Playwright E2E tests for the main student workflow.
 
-## Target Product
+## AI-Native Features
 
-UniMatch AI helps a prospective student compare university programs and receive structured admission guidance. The target experience is a working advisor interface that can:
+UniMatch AI is not plain chat layered on top of a static page. The advisor architecture is tool-based and grounded in the known catalog.
 
-- collect a student profile, academic scores, interests, budget, location preferences, and target degree level
-- show a ranked list of matching universities and programs
-- explain fit, risks, missing requirements, and next steps
-- answer admission questions through an AI advisor that uses tools against known data
-- keep working without Supabase by reading local seed data
-- keep working without an OpenAI API key by returning a safe fallback advisor response
+Implemented advisor/API routes:
 
-## Final Feature List
+- `POST /api/advisor` - conversational advisor response using profile and shortlist context.
+- `GET /api/advisor/status` - non-secret AI status and tool list.
+- `POST /api/ai/profile-parser` - extracts a student profile from a study-goal sentence.
+- `POST /api/ai/smart-search` - converts natural language into catalog filters.
+- `POST /api/ai/program-insight` - explains fit for one catalog program.
+- `POST /api/ai/compare-summary` - summarizes shortlisted program tradeoffs.
+- `POST /api/ai/admission-roadmap` - generates an application roadmap from recommendations.
 
-- Premium dark student-facing admissions platform
-- University and program catalog with country, field, degree, tuition, IELTS, and scholarship filters
-- Natural-language AI smart search that applies catalog filters
-- Admission profile form with AI profile fill from pasted study goals
-- Ranked admission fit recommendations with scores, risks, missing requirements, and next steps
-- Program-level AI fit explanations grounded in catalog facts
-- Compare/shortlist workflow for up to three programs
-- AI comparison brief for shortlisted programs
-- Admission roadmap generator after recommendation results
-- Conversational AI advisor using internal tools and catalog-grounded fallback behavior
-- Health, catalog, recommendation, advisor, and AI workflow API routes
-- Playwright E2E test coverage for the main student workflow
+Implemented internal advisor tools:
 
-## Target Stack
+- `searchPrograms`
+- `comparePrograms`
+- `getProgramRequirements`
+- `calculateAdmissionChance`
+- `saveStudentPreferences`
+
+When OpenAI is configured, the app uses the OpenAI SDK with tool/function-calling style logic and structured outputs. When `OPENAI_API_KEY` is missing or unavailable, the app still builds and runs using deterministic catalog-based behavior. The advisor is constrained to recommend only programs from the catalog and should not invent universities, requirements, deadlines, or admission guarantees.
+
+## Tech Stack
 
 - Next.js App Router
+- React
 - TypeScript
 - Tailwind CSS
-- shadcn-style UI components
-- Supabase-ready data access with local seed-data fallback
-- OpenAI tool-calling style AI advisor
-- Playwright tests
-- Vercel deployment
-
-## Planned App Structure
-
-The implementation should stay inside `unimatch-ai/` unless a root workflow artifact is being updated.
-
-Planned structure:
-
-```text
-unimatch-ai/
-  src/
-    app/
-      page.tsx
-      api/
-        health/route.ts
-        programs/route.ts
-        recommendations/route.ts
-        advisor/route.ts
-    components/
-      ui/
-      advisor/
-      admissions/
-    lib/
-      ai/
-      data/
-      supabase/
-      validation/
-    data/
-      seed-universities.ts
-  tests/
-    e2e/
-```
-
-The exact file layout may change if the implementation reveals a simpler local pattern, but the separation between UI, API, data access, AI tools, and tests should remain clear.
-
-## Core Data Model
-
-Minimum entities:
-
-- `University`: id, name, country, city, website, ranking notes, tuition range
-- `Program`: id, university id, name, degree level, field, language, duration, tuition, deadline
-- `AdmissionRequirement`: program id, GPA/test score requirements, documents, language requirements
-- `StudentProfile`: intended field, degree level, GPA, tests, budget, location preferences, language, constraints
-- `Recommendation`: program, match score, fit reasons, risks, missing requirements, suggested actions
-
-All data access must support two modes:
-
-- Supabase mode when configured environment variables are present
-- local seed-data mode when Supabase is absent or unavailable
-
-## Backend API Plan
-
-Planned API routes:
-
-- `GET /api/health`: returns app status, data source mode, and AI availability without exposing secrets
-- `GET /api/programs`: returns filterable local or Supabase-backed programs
-- `POST /api/recommendations`: accepts a validated student profile and returns ranked program matches
-- `POST /api/advisor`: accepts advisor messages and profile context, executes AI tools when available, and returns a structured advisor response
-- `GET /api/advisor/status`: returns non-secret AI status diagnostics
-- `POST /api/ai/profile-parser`: extracts profile fields from a study-goal sentence
-- `POST /api/ai/smart-search`: converts natural language into catalog filters
-- `POST /api/ai/program-insight`: explains fit for one program
-- `POST /api/ai/compare-summary`: summarizes a shortlist
-- `POST /api/ai/admission-roadmap`: generates a practical application plan
-
-All API responses should use stable JSON contracts with explicit error messages. API routes must not require Supabase or OpenAI to be present for the app to render.
-
-## AI Advisor Plan
-
-The advisor must use tools rather than behaving as plain chat only. Planned tools:
-
-- `searchPrograms`: filter programs by field, location, degree level, language, and budget
-- `comparePrograms`: compare shortlisted programs across tuition, country, requirements, scholarships, deadlines, and fit
-- `getProgramRequirements`: retrieve admission requirements for selected programs
-- `calculateAdmissionChance`: score programs against a student profile
-- `saveStudentPreferences`: normalize the current request context
-
-If `OPENAI_API_KEY` is missing, advisor and AI-native routes still return safe catalog-based responses from local data when possible.
+- OpenAI API
+- Local seed-data repository
+- Playwright E2E tests
+- Vercel deployment target
 
 ## Environment Variables
 
-No hardcoded secrets are allowed.
-
-Optional variables:
+Create `unimatch-ai/.env.local` for local-only secrets. Do not commit this file.
 
 ```text
 OPENAI_API_KEY=
 OPENAI_MODEL=
+```
+
+Optional Supabase config-status variables currently detected by the app:
+
+```text
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 Rules:
 
-- `.env.local` stays uncommitted.
-- Public variables must contain only values safe for the browser.
-- `SUPABASE_SERVICE_ROLE_KEY` must be used only in server-side code if it is ever needed.
-- Missing variables must trigger fallback behavior, not a broken app.
+- Never use `NEXT_PUBLIC_OPENAI_API_KEY`.
+- Keep OpenAI keys server-side only.
+- Missing `OPENAI_API_KEY` should not break the app.
+- The current implementation uses local catalog data by default; Supabase adapter behavior is not implemented beyond configuration-status detection.
 
-To run locally with OpenAI enabled, create `unimatch-ai/.env.local` and add `OPENAI_API_KEY`. The app also builds and runs without that key by using catalog-based logic.
+## Local Setup
 
-## Build, Test, And Deploy
-
-Run commands from `unimatch-ai/`.
-
-Development:
+From the repository root:
 
 ```bash
+cd unimatch-ai
 npm install
 npm run dev
 ```
 
-Production build:
+Open `http://localhost:3000`.
+
+## Build / Lint / Tests
+
+Actual scripts from `unimatch-ai/package.json`:
 
 ```bash
 npm run lint
 npm run build
+npm run test:e2e
+npm run test:e2e:ui
 ```
 
-E2E tests:
+Install the Playwright browser once before the first local E2E run:
 
 ```bash
 npx playwright install chromium
-npm run build
-npm run test:e2e
 ```
 
-Interactive Playwright UI:
+## API Routes
 
-```bash
-npm run test:e2e:ui
-```
+- `GET /api/health` - returns service status, active data source, Supabase config status, AI availability, and timestamp.
+- `GET /api/programs` - returns filterable catalog programs with university and requirement data.
+- `POST /api/recommendations` - accepts a student profile and returns ranked admission matches.
+- `POST /api/advisor` - accepts a question plus optional profile/shortlist context and returns a structured advisor answer.
+- `GET /api/advisor/status` - returns `openaiConfigured`, selected model, and advisor tool names without exposing keys.
+- `POST /api/ai/profile-parser` - extracts profile fields from free text.
+- `POST /api/ai/smart-search` - converts a natural-language query into catalog filters.
+- `POST /api/ai/program-insight` - returns fit summary, strengths, risks, missing requirements, and next steps for a program.
+- `POST /api/ai/compare-summary` - returns best overall, safest option, best value, scholarship-friendly option, tradeoffs, and final advice.
+- `POST /api/ai/admission-roadmap` - returns an overview, timeline, document checklist, score-improvement advice, and deadline advice.
 
-Deployment:
+## Deployment
 
-- Import the repository into Vercel.
-- Set the project root directory to `unimatch-ai`.
-- Use the default Next.js output handling.
-- Use `npm install` as the install command and `npm run build` as the build command.
-- Add optional environment variables in Vercel project settings; never commit `.env.local`.
-- Verify the homepage, `/api/health`, admission fit flow, and advisor flow after deployment.
+Vercel deployment steps:
 
-## Solo Role Phases
+1. Import the GitHub repository into Vercel.
+2. Set the project root directory to `unimatch-ai`.
+3. Use `npm install` as the install command.
+4. Use `npm run build` as the build command.
+5. Add `OPENAI_API_KEY` and `OPENAI_MODEL` in Vercel environment variables if OpenAI-powered behavior is desired.
+6. Add optional Supabase public URL/anon variables only if needed for config-status checks or future adapter work.
+7. Redeploy after adding or changing environment variables.
+8. Keep `.env.local` out of git.
 
-### 1. Frontend Developer
+## Known Limitations
 
-Goal: create the admission advisor user experience.
+- Catalog data is curated local data, not official live university data.
+- Admission guidance and requirements should always be verified on official university pages.
+- OpenAI-enhanced behavior requires a valid `OPENAI_API_KEY`.
+- The app has no real authentication, payment flow, admin panel, or user accounts.
+- The current data repository is local-first; Supabase is detected for configuration status but no Supabase data adapter is connected.
+- Playwright tests cover the main desktop Chromium flows; visual regression, mobile E2E, and cross-browser suites are not included yet.
+- Live deployment URL is still TODO.
 
-Expected outputs:
+## Submission Checklist
 
-- responsive App Router page
-- student profile form
-- recommendation results area
-- advisor interaction panel
-- loading, empty, error, and fallback states
-- shadcn-style component primitives where useful
-
-### 2. Backend Developer
-
-Goal: create stable API contracts and data access.
-
-Expected outputs:
-
-- health, programs, recommendations, and advisor API routes
-- TypeScript domain types and validation
-- local seed-data fallback
-- Supabase-ready repository layer
-- clear error handling without leaking secrets
-
-### 3. AI Engineer
-
-Goal: implement an AI advisor that uses tools.
-
-Expected outputs:
-
-- advisor orchestration layer
-- tool definitions and schemas
-- deterministic fallback when AI is unavailable
-- prompt and tool-result safety constraints
-- structured advisor response contract
-
-### 4. QA Engineer & Workflow Master
-
-Goal: verify behavior, preserve evidence, and prepare deployment.
-
-Expected outputs:
-
-- Playwright tests for core flows
-- API contract checks
-- lint/build verification
-- evidence files under `docs/evidence/`
-- Vercel deployment notes
-- final implementation checklist
-
-## MCP Usage Plan
-
-Use MCP and connected tools only for real project work, not to imply a multi-person team.
-
-- Context7 MCP: fetch current documentation for Next.js, React, Tailwind CSS, Supabase, OpenAI SDK/tool calling, Playwright, and any shadcn-related setup before implementing or debugging library-specific code.
-- Browser plugin: inspect local UI after frontend implementation and capture behavior issues before final QA.
-- Supabase tools, if connected: inspect schema, logs, and advisors before applying any remote changes. Prefer local fallback first.
-- GitHub tools, if connected and requested: inspect PR or CI status. Do not invent collaborators, reviewers, or participants.
-- Web search: use only when current non-library information is required and MCP/local context is insufficient.
-
-## Commit Plan
-
-Recommended small commits:
-
-1. `docs: define solo role-based sprint workflow`
-2. `feat: build admission advisor frontend shell`
-3. `feat: add program data and backend API routes`
-4. `feat: add tool-based AI advisor with safe fallback`
-5. `test: add playwright coverage and evidence placeholders`
-6. `docs: finalize deployment and verification notes`
-
-Each commit should map to one role phase or one clear cross-role handoff. Do not add fake author names, fake teammates, or fake approvals.
-
-## Output Contracts
-
-Frontend contract:
-
-- renders without environment variables
-- supports desktop and mobile layouts
-- exposes form, results, and advisor states
-- handles API errors and missing AI key gracefully
-
-Backend contract:
-
-- returns JSON with stable `ok`, `data`, and `error` fields or an equivalent documented shape
-- validates incoming profile and advisor payloads
-- reports data source mode as `supabase` or `seed`
-- does not expose secrets in responses or logs
-
-AI contract:
-
-- calls tools for university/program facts and recommendation logic
-- returns answer text plus supporting recommendations
-- names uncertainty and missing data
-- falls back safely when `OPENAI_API_KEY` is missing
-
-QA contract:
-
-- Playwright covers first-load, catalog/filter, recommendation, compare, and advisor fallback paths
-- build/lint/test results are recorded in `docs/evidence/`
-- deployment evidence is documented without exposing project secrets
-
-## Development Checklist
-
-- [x] Replace starter UI with UniMatch AI interface
-- [x] Add domain types and validation
-- [x] Add local seed university/program data
-- [ ] Add Supabase-ready data repository with seed fallback
-- [x] Add backend API routes
-- [x] Add tool-based advisor orchestration
-- [x] Add missing-key AI fallback response
-- [x] Add Playwright tests
-- [x] Run lint and build
-- [x] Run tests
-- [x] Capture evidence in `docs/evidence/`
-- [x] Deploy to Vercel or document deployment blocker
-
-## Local Commands
-
-From `unimatch-ai/`:
-
-```bash
-npm run dev
-npm run lint
-npm run build
-npm run test:e2e
-npm run test:e2e:ui
-```
-
-Run `npx playwright install chromium` once before the first local E2E run.
+- [ ] GitHub repository
+- [ ] Deployed app link
+- [x] README
+- [x] WORKFLOW
+- [x] `ai-rules/`
+- [x] Subagent docs
+- [ ] Evidence screenshots
+- [x] Tests/build results
+- [ ] Video demo

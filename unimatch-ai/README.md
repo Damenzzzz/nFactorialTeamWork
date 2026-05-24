@@ -48,7 +48,6 @@ OPENAI_API_KEY=
 OPENAI_MODEL=
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 The app works without OpenAI or Supabase by using catalog-based local behavior.

@@ -26,3 +26,13 @@ Role phase: QA Engineer & Workflow Master. This is solo role-based verification 
 - No mobile viewport E2E test is included in this slice.
 - Supabase-backed data mode is not tested because no Supabase project is connected.
 - Deployment was not executed from this environment.
+
+## Screenshot Evidence To Capture
+
+- [ ] App homepage
+- [ ] Catalog and filters
+- [ ] Admission fit result
+- [ ] AI advisor answer
+- [ ] AI-native feature panel or roadmap
+- [ ] Playwright test run
+- [ ] Vercel deployment page after deployment

@@ -1,300 +1,205 @@
-# Solo Role-Based Workflow
+# UniMatch AI Workflow
 
-UniMatch AI is a solo project. The workflow uses role phases to structure the work, not to represent a team. Every artifact should be written as the work of one developer switching responsibilities across frontend, backend, AI, and QA.
+## Project Overview
 
-## Ground Rules
+UniMatch AI is an AI-native university admissions platform. The final product goal is to help students explore programs, calculate admission fit, compare shortlisted options, and receive catalog-grounded AI guidance for application planning.
 
-- Do not invent team members, reviewers, approvals, or authors.
-- Do not hardcode secrets.
-- Do not require Supabase for the app to work.
-- Do not require an OpenAI API key for the app to render or return a safe advisor response.
-- Use current documentation through Context7 MCP before implementing library-specific code.
-- Keep commits small and tied to a clear role phase.
-- Preserve evidence under `docs/evidence/` as implementation proof.
+The implemented app is in `unimatch-ai/` and includes a student-facing Next.js interface, local catalog data, backend API routes, recommendation logic, AI advisor/tools, AI-native workflow features, and Playwright E2E tests.
 
-## Phase Order
+## Solo Role-Based Workflow
 
-1. Frontend Developer
-2. Backend Developer
-3. AI Engineer
-4. QA Engineer & Workflow Master
+This project was completed solo. The work was organized into role phases to keep responsibilities clear:
 
-The phases are sequential for planning clarity, but feedback can move backward. For example, QA may expose a backend contract issue, and the next commit can return to the Backend Developer phase.
+- Frontend Developer
+- Backend Developer
+- AI Engineer
+- QA Engineer & Workflow Master
 
-## Phase 1: Frontend Developer
+These roles are workflow lenses for one developer using Codex. No fake teammates, reviewers, approvals, or team activity were created.
 
-Goal: deliver the user-facing advisor experience.
+## Timeline / Commit-Based Progress
 
-Inputs:
+Available git history shows the project moving through these real phases:
 
-- product scope from `README.md`
-- role rules from `ai-rules/frontend-developer.md`
-- existing Next.js app in `unimatch-ai/`
+- Project setup: initialized the Next.js app.
+- Workflow setup: added architecture notes, role-based workflow plan, `AGENTS.md`, AI rules, and subagent docs.
+- Backend/data/API: added local university/program data, recommendation logic, and core API routes.
+- Frontend UI: converted the prototype into a premium student-facing admissions platform.
+- AI advisor/tools: added a tool-based advisor route and catalog-grounded fallback behavior.
+- UI corrections: improved advisor wording and fixed profile form layout issues.
+- AI-native workflow: integrated profile parsing, smart search, program insights, compare summaries, and roadmaps into the main workflow.
+- QA/docs/deployment preparation: added Playwright E2E coverage and evidence/deployment documentation.
 
-Implementation plan:
+Representative commits in the current history include:
 
-- inspect the starter App Router structure
-- fetch current Next.js, React, Tailwind CSS, and shadcn-style documentation through Context7 before implementation details are chosen
-- create a focused first screen for the actual advisor experience, not a marketing landing page
-- build student profile inputs, recommendation display, and advisor panel
-- add loading, empty, validation, API error, no-Supabase, and no-AI-key states
-- keep components small enough for later backend wiring
+- `chore: initialize Next.js project`
+- `docs: add architecture and role-based workflow plan`
+- `docs: add Codex agents and subagent instructions`
+- `feat(backend): add program data and recommendation APIs`
+- `feat(frontend): turn prototype into student-facing platform`
+- `feat(ai): add advisor route with tool-based recommendations`
+- `fix(ui): polish advisor wording and profile form layout`
+- `feat(ai): integrate AI across admission workflow`
+- `test(e2e): add Playwright coverage for core flows`
 
-Output contract:
+## Role 1 - Frontend Developer
 
-- `unimatch-ai/src/app/page.tsx` renders a working UI shell
-- UI does not depend on Supabase or OpenAI
-- calls are isolated behind functions or API endpoints
-- visual states are testable by Playwright
+Frontend work delivered the student-facing product experience:
 
-Evidence placeholders:
+- Premium dark SaaS-style interface.
+- Hero and navigation focused on the actual admissions workflow.
+- University/program catalog with cards and filters.
+- Student admission profile form.
+- Recommendation result UI with scores, risks, missing requirements, and next steps.
+- Compare/shortlist section.
+- Advisor panel and AI feature surfaces integrated into the main workflow.
+- Responsive layout patterns for desktop and mobile.
+- Public UI copy cleanup so internal workflow evidence, tool names, missing-key messages, MCP, Codex, Playwright, and API route details are not exposed to students.
 
-- `docs/evidence/frontend-desktop.png`
-- `docs/evidence/frontend-mobile.png`
-- `docs/evidence/frontend-notes.md`
+UI issues corrected during the process included overly technical advisor fallback wording and an awkward degree-level segmented control layout.
 
-Suggested commit:
+## Role 2 - Backend Developer
 
-- `feat: build admission advisor frontend shell`
+Backend work delivered typed data and stable APIs:
 
-## Phase 2: Backend Developer
+- TypeScript domain model for universities, programs, requirements, student profiles, recommendations, advisor responses, and AI feature payloads.
+- Curated local seed-data repository.
+- Program filtering by country, countries, field, degree level, tuition, IELTS, and scholarship availability.
+- Recommendation scoring and ranking logic.
+- Stable JSON API response contracts using `ok`, `data`, and `error`.
+- API routes for health, programs, recommendations, advisor, advisor status, and AI-native features.
+- Safe request validation and error handling.
+- No hardcoded secrets.
 
-Goal: deliver stable API contracts and data access.
+The app currently uses local catalog data by default. Supabase public URL/anon variables are detected for configuration status, but a Supabase data adapter is not connected.
 
-Inputs:
+## Role 3 - AI Engineer
 
-- frontend payload needs
-- role rules from `ai-rules/backend-developer.md`
-- local seed-data requirement
+AI work delivered a tool-based architecture rather than plain chat only:
 
-Implementation plan:
+- `POST /api/advisor` advisor route.
+- OpenAI SDK integration when `OPENAI_API_KEY` is configured.
+- Deterministic/catalog fallback when OpenAI is missing or unavailable.
+- Catalog-grounding rules so the advisor only recommends known programs.
+- Tool/function-calling style advisor flow.
+- Internal tools:
+  - `searchPrograms`
+  - `comparePrograms`
+  - `getProgramRequirements`
+  - `calculateAdmissionChance`
+  - `saveStudentPreferences`
 
-- fetch current Next.js Route Handler and Supabase documentation through Context7
-- define TypeScript domain models and request/response contracts
-- create seed data for universities, programs, and requirements
-- implement repository functions that choose Supabase when configured and seed data otherwise
-- add API routes for health, programs, recommendations, and advisor entry
-- validate request bodies and return safe structured errors
+Additional AI-native features implemented:
 
-Output contract:
+- `POST /api/ai/profile-parser`
+- `POST /api/ai/smart-search`
+- `POST /api/ai/program-insight`
+- `POST /api/ai/compare-summary`
+- `POST /api/ai/admission-roadmap`
+- `GET /api/advisor/status`
 
-- APIs return deterministic JSON
-- data mode is visible as `seed` or `supabase`
-- Supabase absence is expected behavior, not an error
-- no response leaks server secrets
+The AI layer is designed not to hallucinate university options, requirements, deadlines, or guarantees. Guidance is based on available catalog data and should be verified on official university pages.
 
-Evidence placeholders:
+## Role 4 - QA / Workflow Master
 
-- `docs/evidence/api-health.json`
-- `docs/evidence/api-programs.json`
-- `docs/evidence/api-recommendations.json`
+QA/workflow work delivered verification and submission preparation:
 
-Suggested commit:
+- Installed and configured `@playwright/test`.
+- Added `unimatch-ai/playwright.config.ts`.
+- Added E2E tests under `unimatch-ai/tests/e2e/`.
+- Added scripts:
+  - `npm run test:e2e`
+  - `npm run test:e2e:ui`
+- Ran lint, build, and E2E checks locally.
+- Updated documentation for local setup, tests, deployment, and evidence.
+- Added evidence checklists and deployment checklist under `docs/evidence/`.
 
-- `feat: add program data and backend API routes`
+Playwright coverage includes homepage smoke, catalog, filter, admission fit, compare/shortlist, and advisor fallback/catalog answer flows.
 
-## Phase 3: AI Engineer
+## MCP Usage
 
-Goal: implement an AI advisor that uses tools.
+MCP was used as support for the solo workflow, not as evidence of a team.
 
-Inputs:
+- Context7 MCP - used to fetch current documentation for framework/library work such as Next.js, OpenAI SDK/tool-calling, Vercel, and Playwright setup.
+- Playwright MCP / browser tooling - used for local browser QA support and page inspection during frontend and QA work.
+- Supabase MCP - planned for backend/data inspection if a Supabase project is connected; no Supabase-backed data adapter is currently implemented.
+- GitHub MCP - available for repository/workflow review if needed; final docs do not claim PR review or external approval.
 
-- backend data functions
-- recommendation logic
-- role rules from `ai-rules/ai-engineer.md`
+Detailed MCP screenshots are not currently committed as evidence.
 
-Implementation plan:
+## Codex Subagents
 
-- fetch current OpenAI SDK/tool-calling documentation through Context7 before implementation
-- define advisor tools for search, ranking, requirements lookup, and recommendation explanation
-- keep tool schemas narrow and typed
-- ensure the model cannot invent unsupported university facts when seed/Supabase data is available
-- return a safe fallback response when `OPENAI_API_KEY` is missing
-- include uncertainty and next-step language in advisor responses
+Subagent docs are instruction files for role phases, not human teammates:
 
-Output contract:
+- Frontend UI/UX Subagent: `docs/subagents/frontend-ui.md`
+- Backend/API/Data Subagent: `docs/subagents/backend-api.md`
+- AI Advisor/Tools Subagent: `docs/subagents/ai-advisor.md`
+- QA/Workflow Subagent: `docs/subagents/qa-workflow.md`
 
-- advisor route uses tools for facts and recommendations
-- missing key produces safe non-crashing guidance
-- tool results are structured and auditable
-- prompt instructions prohibit fabricated admissions guarantees
-
-Evidence placeholders:
-
-- `docs/evidence/ai-tool-call.json`
-- `docs/evidence/ai-fallback.json`
-- `docs/evidence/ai-notes.md`
-
-Suggested commit:
-
-- `feat: add tool-based AI advisor with safe fallback`
-
-## Phase 4: QA Engineer & Workflow Master
-
-Goal: verify the app, record evidence, and prepare deployment.
-
-Inputs:
-
-- completed frontend, backend, and AI phases
-- role rules from `ai-rules/qa-workflow-master.md`
-- deployment target: Vercel
-
-Implementation plan:
-
-- fetch current Playwright and Vercel documentation through Context7 before setup or debugging
-- add Playwright tests for first load, profile submission, recommendations, and AI fallback
-- run lint, build, and tests locally
-- inspect the local app with the Browser plugin after significant UI changes
-- record command outputs and screenshots in `docs/evidence/`
-- document deployment status and any blockers without exposing secrets
-
-Output contract:
-
-- test suite covers core user flows
-- evidence files exist and match the current implementation
-- README and workflow remain accurate
-- final status clearly names known gaps
-
-Evidence placeholders:
-
-- `docs/evidence/playwright-summary.txt`
-- `docs/evidence/lint-build.txt`
-- `docs/evidence/vercel-deployment.txt`
-
-Suggested commit:
-
-- `test: add playwright coverage and evidence`
-
-## MCP Usage Plan
-
-Use MCP as execution support for the solo workflow:
-
-- Context7 MCP is mandatory for library, framework, SDK, API, CLI, and cloud-service questions before implementation or debugging.
-- Browser plugin is used for local visual verification after the frontend exists.
-- Supabase MCP is used only if a Supabase project is connected; inspect before changing remote state.
-- GitHub MCP is used only if repository, PR, issue, or CI work is requested.
-- Figma MCP is not required unless a design artifact is explicitly requested.
-
-MCP output should inform implementation notes and evidence. It should not be described as work done by other people.
+These files helped structure the work across frontend, backend, AI, and QA responsibilities.
 
 ## AI-Native Product Features
 
-UniMatch AI now treats AI as part of the main admissions workflow, not only as a separate advisor chat. These features are implemented as solo role-based work and must not be documented as a multi-person handoff.
+Implemented AI-native product features:
 
-- AI Profile Parser: turns a student's pasted study goal into editable profile fields for field, degree level, GPA, IELTS, SAT, budget, preferred countries, and scholarship preference.
-- AI Smart Search: converts natural-language catalog searches into program filters while keeping manual filters available.
-- AI Program Fit Explanation: explains a program's strengths, risks, missing requirements, and next steps using known catalog data and the current student profile.
-- AI Compare Summary: summarizes shortlisted programs across fit, tuition, requirements, scholarship signal, deadlines, and tradeoffs.
-- AI Admission Roadmap: turns recommendation results into a student-facing timeline, document checklist, score-improvement plan, and deadline advice.
-- Advisor tools: keep the conversational advisor grounded in catalog search, program comparison, requirements lookup, admission fit calculation, and preference normalization.
+- AI advisor grounded in catalog tools.
+- AI profile parser for pasted study goals.
+- AI smart search for natural-language program search.
+- AI program insight for fit explanations.
+- AI compare summary for shortlisted programs.
+- AI admission roadmap after recommendation results.
+- Recommendation tools and local catalog fallback.
 
-OpenAI is used when configured for structured extraction and polished grounded summaries. The app must still run safely without OpenAI by using catalog-based logic. Public UI should stay student-facing and must not expose API keys, route names, MCP, Codex, Playwright, seed mode, provider errors, or internal implementation details.
+## Where AI Saved Time
 
-## QA Engineer & Workflow Master Phase
+- Drafting and iterating the premium student-facing UI.
+- Creating typed API boilerplate and validation patterns.
+- Expanding the local university/program dataset.
+- Designing the tool-based AI advisor architecture.
+- Adding AI-native workflow routes and frontend states.
+- Producing workflow docs, evidence checklists, and QA plans.
+- Debugging wording/layout issues quickly after product direction changed.
 
-Playwright E2E coverage is now configured inside `unimatch-ai/` with `@playwright/test`, `playwright.config.ts`, and tests under `tests/e2e/`.
+## Where AI Failed
 
-Commands for this phase:
+- The first frontend direction exposed internal workflow evidence in public UI, which had to be removed.
+- Advisor fallback copy was initially too technical for a student-facing product.
+- The profile form degree-level segmented control had layout/polish issues.
+- OpenAI environment/status behavior needed careful wording so users did not see missing-key or provider details.
+- Product direction still required human correction to keep the app focused on student admissions rather than implementation evidence.
 
-```bash
-cd unimatch-ai
-npm run lint
-npm run build
-npm run test:e2e
-npm run test:e2e:ui
-```
+## What Would Take 3x Longer Without AI
 
-What the E2E suite tests:
+- Building the full UI component set and responsive states.
+- Writing the data/API layer and recommendation flow.
+- Implementing multiple AI routes with typed contracts.
+- Creating advisor tools and fallback behavior.
+- Producing submission-ready README, workflow, and evidence docs.
+- Preparing Playwright coverage across the main workflow.
 
-- homepage smoke path with brand/title and primary CTA
-- catalog rendering and filter controls
-- field filter behavior with valid result state
-- admission profile submission and ranked recommendation output
-- compare/shortlist updates after selecting two programs
-- advisor question flow without requiring a real OpenAI call
+## Evidence Checklist
 
-Known limitations:
+- [ ] Screenshot of app homepage
+- [ ] Screenshot of catalog/filter
+- [ ] Screenshot of AI advisor working
+- [ ] Screenshot of AI features if present
+- [ ] Screenshot of Codex usage
+- [ ] Screenshot of MCP list/usage
+- [ ] Screenshot of Playwright test run
+- [ ] Screenshot of Vercel deployment
+- [ ] Video demo link
 
-- tests currently run against Chromium only
-- visual regression and mobile viewport checks are not yet included
-- Supabase-backed data mode is not covered because the project still works from local catalog data by default
-- deployment is documented but not executed in this repository state
+Evidence notes and checklists are stored in `docs/evidence/`. Screenshots are not currently committed unless added later.
 
-AI was used for QA as a solo implementation aid to design test coverage, inspect selectors, and update evidence. It does not represent a separate tester, reviewer, or approval.
+## Final Submission Checklist
 
-## Output Contracts
-
-Every phase must finish with a short handoff note that includes:
-
-- files changed
-- commands run
-- evidence created or pending
-- risks or assumptions
-- next phase input requirements
-
-API contracts should be documented near the implementation and summarized in README when finalized.
-
-AI tool contracts should include:
-
-- tool name
-- input schema
-- output schema
-- failure behavior
-- data source used
-
-QA contracts should include:
-
-- tested scenario
-- command or Playwright test name
-- expected result
-- evidence file
-
-## Commit Plan
-
-Use these commits unless implementation constraints justify a smaller split:
-
-1. `docs: define solo role-based sprint workflow`
-2. `feat: build admission advisor frontend shell`
-3. `feat: add program data and backend API routes`
-4. `feat: add tool-based AI advisor with safe fallback`
-5. `test: add playwright coverage and evidence`
-6. `docs: finalize deployment notes`
-
-Commit body format:
-
-```text
-Role phase: <Frontend Developer | Backend Developer | AI Engineer | QA Engineer & Workflow Master>
-
-- Summary of work
-- Validation run
-- Evidence path, if any
-```
-
-## Development Checklist
-
-- [ ] Confirm starter app builds before feature work
-- [ ] Fetch current docs with Context7 before library-specific implementation
-- [ ] Build frontend advisor interface
-- [ ] Add API routes and validation
-- [ ] Add local seed data fallback
-- [ ] Add Supabase-ready repository layer
-- [ ] Add OpenAI tool-calling advisor
-- [ ] Add missing-key fallback
-- [x] Add Playwright tests
-- [x] Run lint
-- [x] Run build
-- [x] Run tests
-- [ ] Capture screenshots and API outputs
-- [x] Document deployment or blockers
-
-## Definition of Done
-
-The sprint is complete when:
-
-- the app runs locally without Supabase
-- the advisor route returns a safe response without `OPENAI_API_KEY`
-- the advisor uses tools when AI is configured
-- Playwright covers the main path and fallback path
-- lint/build/test status is recorded
-- evidence files are present under `docs/evidence/`
-- documentation accurately describes the solo role-based workflow
+- [ ] GitHub repository
+- [ ] Deployed link
+- [x] README
+- [x] WORKFLOW
+- [x] `ai-rules/`
+- [x] `AGENTS.md`
+- [x] `docs/subagents/`
+- [x] `docs/evidence/`
+- [x] Tests/build status
+- [ ] Video demo

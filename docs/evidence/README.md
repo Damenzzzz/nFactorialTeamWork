@@ -6,13 +6,17 @@ Do not include secrets, private tokens, Supabase service keys, personal account 
 
 ## Evidence Files
 
-Frontend:
+Screenshot placeholders:
 
-- `frontend-desktop.png`: desktop screenshot of the working advisor UI
-- `frontend-mobile.png`: mobile screenshot of the working advisor UI
-- `frontend-notes.md`: notes on responsive and accessibility checks
+- `frontend-desktop.png`: TODO - desktop screenshot of the working app
+- `frontend-mobile.png`: TODO - mobile screenshot of the working app
+- `catalog-filter.png`: TODO - catalog/filter screenshot
+- `ai-advisor.png`: TODO - advisor screenshot
+- `ai-features.png`: TODO - AI workflow screenshot if captured
+- `playwright-run.png`: TODO - Playwright test run screenshot
+- `vercel-deployment.png`: TODO - deployment screenshot after Vercel deployment
 
-Backend:
+Backend/API samples:
 
 - `api-health.json`: sample `GET /api/health` response
 - `api-programs.json`: sample `GET /api/programs` response
@@ -32,6 +36,8 @@ QA and deployment:
 - `playwright-summary.txt`: optional raw Playwright run summary
 - `lint-build.txt`: optional raw lint and build command summary
 - `vercel-deployment.txt`: optional deployment URL or deployment blocker
+
+Screenshots and deployment URLs should not be claimed as complete until files or links are actually added.
 
 ## Capture Rules
 
