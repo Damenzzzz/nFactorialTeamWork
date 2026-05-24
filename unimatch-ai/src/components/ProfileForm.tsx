@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRight, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, AlertCircle, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/Badge";
+import { fetchProfileParser } from "@/lib/frontend/api-client";
 import type { DegreeLevel, StudentProfile } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,12 @@ export function ProfileForm({
 }: ProfileFormProps) {
   const [values, setValues] = useState<FormValues>(defaultValues);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [studyGoal, setStudyGoal] = useState(
+    "I want Computer Science in Germany or Finland under $10000, IELTS 6.5, GPA 3.4, scholarship preferred.",
+  );
+  const [parserLoading, setParserLoading] = useState(false);
+  const [parserError, setParserError] = useState<string>();
+  const [parserNotes, setParserNotes] = useState<string[]>([]);
 
   const countryOptions = useMemo(() => {
     const merged = new Set([...defaultValues.preferredCountries, ...countries]);
@@ -87,6 +94,30 @@ export function ProfileForm({
     );
   }
 
+  async function handleProfileParser() {
+    if (!studyGoal.trim()) {
+      setParserError("Paste a short study goal first.");
+      return;
+    }
+
+    setParserLoading(true);
+    setParserError(undefined);
+    setParserNotes([]);
+
+    try {
+      const parsed = await fetchProfileParser(studyGoal.trim());
+      setValues((current) => mergeParsedProfile(current, parsed.studentProfile));
+      setParserNotes(parsed.notes);
+      setErrors({});
+    } catch {
+      setParserError(
+        "We could not fill the profile from that text. Try a shorter goal with field, country, budget, GPA, and IELTS.",
+      );
+    } finally {
+      setParserLoading(false);
+    }
+  }
+
   return (
     <form
       className="rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-6"
@@ -119,6 +150,63 @@ export function ProfileForm({
           <span>{apiError}</span>
         </div>
       ) : null}
+
+      <section className="mt-6 rounded-lg border border-cyan-300/15 bg-cyan-300/10 p-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <Sparkles aria-hidden="true" className="size-4 text-cyan-100" />
+              <h4 className="text-base font-semibold text-white">
+                Paste your study goal
+              </h4>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-slate-300">
+              Write your goal in one sentence and UniMatch AI can pre-fill the
+              profile fields for you.
+            </p>
+          </div>
+          <button
+            className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-cyan-200 px-4 text-sm font-semibold text-slate-950 transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={loading || parserLoading}
+            onClick={handleProfileParser}
+            type="button"
+          >
+            {parserLoading ? (
+              <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+            ) : (
+              <Sparkles aria-hidden="true" className="size-4" />
+            )}
+            Fill profile with AI
+          </button>
+        </div>
+
+        <textarea
+          aria-label="Paste your study goal"
+          className="mt-4 min-h-24 w-full resize-none rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 hover:border-white/20 focus:border-cyan-200 focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={loading || parserLoading}
+          onChange={(event) => {
+            setStudyGoal(event.target.value);
+            setParserError(undefined);
+          }}
+          placeholder="I want Computer Science in Germany or Finland under $10000, IELTS 6.5, GPA 3.4, scholarship preferred."
+          value={studyGoal}
+        />
+
+        {parserError ? (
+          <p className="mt-3 text-sm leading-6 text-rose-100">{parserError}</p>
+        ) : parserNotes.length ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {parserNotes.map((note) => (
+              <span
+                className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs leading-5 text-slate-300"
+                key={note}
+              >
+                {note}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </section>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <FieldShell
@@ -443,6 +531,39 @@ function toProfile(values: FormValues): StudentProfile {
       : undefined,
     sat: optionalNumber(values.sat),
     scholarshipRequired: values.scholarshipRequired,
+  };
+}
+
+function mergeParsedProfile(
+  current: FormValues,
+  parsed: Partial<StudentProfile>,
+): FormValues {
+  return {
+    degreeLevel: parsed.degreeLevel ?? current.degreeLevel,
+    gpa:
+      typeof parsed.gpa === "number"
+        ? String(parsed.gpa)
+        : current.gpa,
+    ielts:
+      typeof parsed.ielts === "number"
+        ? String(parsed.ielts)
+        : current.ielts,
+    intendedField: parsed.intendedField ?? current.intendedField,
+    maxTuition:
+      typeof parsed.maxTuition === "number"
+        ? String(parsed.maxTuition)
+        : current.maxTuition,
+    preferredCountries: parsed.preferredCountries?.length
+      ? parsed.preferredCountries
+      : current.preferredCountries,
+    sat:
+      typeof parsed.sat === "number"
+        ? String(parsed.sat)
+        : current.sat,
+    scholarshipRequired:
+      typeof parsed.scholarshipRequired === "boolean"
+        ? parsed.scholarshipRequired
+        : current.scholarshipRequired,
   };
 }
 

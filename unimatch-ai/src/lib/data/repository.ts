@@ -89,7 +89,15 @@ function matchesProgramFilters(
 ): boolean {
   const { university, program, requirement } = record;
 
-  if (filters.country && !sameText(university.country, filters.country)) {
+  const countryFilters = [
+    ...(filters.country ? [filters.country] : []),
+    ...(filters.countries ?? []),
+  ];
+
+  if (
+    countryFilters.length > 0 &&
+    !countryFilters.some((country) => sameText(university.country, country))
+  ) {
     return false;
   }
 

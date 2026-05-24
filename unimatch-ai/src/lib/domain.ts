@@ -93,6 +93,7 @@ export interface Recommendation {
 
 export interface ProgramFilters {
   country?: string;
+  countries?: string[];
   field?: string;
   degreeLevel?: DegreeLevel;
   maxTuition?: number;
@@ -158,6 +159,61 @@ export interface AdvisorResponsePayload {
   suggestedQuestions?: string[];
   savedPreferences?: SavedStudentPreferences;
   aiAvailable?: boolean;
+}
+
+export interface ProfileParserPayload {
+  studentProfile: AdvisorStudentProfile;
+  confidence: number;
+  notes: string[];
+}
+
+export interface SmartSearchFilters {
+  country?: string;
+  countries?: string[];
+  field?: string;
+  degreeLevel?: DegreeLevel;
+  maxTuition?: number;
+  minIelts?: number;
+  scholarshipOnly?: boolean;
+}
+
+export interface SmartSearchPayload {
+  filters: SmartSearchFilters;
+  explanation: string;
+}
+
+export interface ProgramInsightPayload {
+  fitSummary: string;
+  strengths: string[];
+  risks: string[];
+  missingRequirements: string[];
+  nextSteps: string[];
+}
+
+export interface CompareSummaryPayload {
+  bestOverall: string;
+  safestOption: string;
+  bestValue: string;
+  scholarshipFriendlyOption: string;
+  tradeoffs: string[];
+  finalAdvice: string;
+}
+
+export interface AdmissionRoadmapPayload {
+  overview: string;
+  timeline: Array<{
+    label: string;
+    tasks: string[];
+  }>;
+  documents: string[];
+  scoreImprovements: string[];
+  deadlineAdvice: string[];
+}
+
+export interface AdvisorStatusPayload {
+  openaiConfigured: boolean;
+  model: string;
+  advisorTools: AdvisorToolName[];
 }
 
 export interface ApiResponse<T> {

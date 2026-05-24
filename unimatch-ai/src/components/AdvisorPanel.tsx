@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   Bot,
@@ -12,10 +12,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/Badge";
-import { fetchAdvisorResponse } from "@/lib/frontend/api-client";
+import {
+  fetchAdvisorResponse,
+  fetchAdvisorStatus,
+} from "@/lib/frontend/api-client";
 import { formatCurrency, formatDeadline } from "@/lib/frontend/format";
 import type {
   AdvisorResponsePayload,
+  AdvisorStatusPayload,
   AdvisorToolName,
   Recommendation,
   StudentProfile,
@@ -45,6 +49,17 @@ export function AdvisorPanel({
   const [response, setResponse] = useState<AdvisorResponsePayload>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
+  const [status, setStatus] = useState<AdvisorStatusPayload>();
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") {
+      return;
+    }
+
+    fetchAdvisorStatus()
+      .then(setStatus)
+      .catch(() => setStatus(undefined));
+  }, []);
 
   const contextLabel = useMemo(() => {
     if (studentProfile && shortlistedProgramIds.length) {
@@ -161,6 +176,16 @@ export function AdvisorPanel({
             Ask advisor
           </button>
         </div>
+        {process.env.NODE_ENV === "development" && status ? (
+          <details className="mt-4 rounded-lg border border-white/10 bg-black/20 px-4 py-3">
+            <summary className="cursor-pointer list-none text-xs font-medium text-slate-400">
+              AI mode: {status.openaiConfigured ? "OpenAI" : "Catalog assistant"}
+            </summary>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Development diagnostic only.
+            </p>
+          </details>
+        ) : null}
       </form>
 
       <section className="rounded-lg border border-white/10 bg-white/[0.055] p-5 shadow-2xl shadow-black/20 backdrop-blur-xl sm:p-6">

@@ -18,6 +18,10 @@ export function parseProgramFilters(
   searchParams: URLSearchParams,
 ): ValidationResult<ProgramFilters> {
   const country = optionalText(searchParams.get("country"));
+  const countries = optionalText(searchParams.get("countries"))
+    ?.split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   const field = optionalText(searchParams.get("field"));
   const degreeLevelRaw = optionalText(searchParams.get("degreeLevel"));
   const maxTuitionRaw = optionalText(searchParams.get("maxTuition"));
@@ -63,6 +67,7 @@ export function parseProgramFilters(
     ok: true,
     data: {
       country,
+      countries: countries?.length ? countries : undefined,
       field,
       degreeLevel,
       maxTuition: maxTuition?.data,

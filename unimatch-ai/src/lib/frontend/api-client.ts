@@ -1,10 +1,16 @@
 import type {
+  AdmissionRoadmapPayload,
   AdvisorRequest,
   AdvisorResponsePayload,
+  AdvisorStatusPayload,
   ApiResponse,
+  CompareSummaryPayload,
+  ProgramInsightPayload,
   ProgramFilters,
   ProgramWithAdmissions,
+  ProfileParserPayload,
   Recommendation,
+  SmartSearchPayload,
   StudentProfile,
 } from "@/lib/domain";
 
@@ -71,6 +77,82 @@ export async function fetchAdvisorResponse(
     },
     method: "POST",
   });
+}
+
+export async function fetchProfileParser(
+  text: string,
+): Promise<ProfileParserPayload> {
+  return readApi<ProfileParserPayload>("/api/ai/profile-parser", {
+    body: JSON.stringify({ text }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchSmartSearch(
+  query: string,
+): Promise<SmartSearchPayload> {
+  return readApi<SmartSearchPayload>("/api/ai/smart-search", {
+    body: JSON.stringify({ query }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchProgramInsight({
+  programId,
+  studentProfile,
+}: {
+  programId: string;
+  studentProfile?: StudentProfile;
+}): Promise<ProgramInsightPayload> {
+  return readApi<ProgramInsightPayload>("/api/ai/program-insight", {
+    body: JSON.stringify({ programId, studentProfile }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchCompareSummary({
+  programIds,
+  studentProfile,
+}: {
+  programIds: string[];
+  studentProfile?: StudentProfile;
+}): Promise<CompareSummaryPayload> {
+  return readApi<CompareSummaryPayload>("/api/ai/compare-summary", {
+    body: JSON.stringify({ programIds, studentProfile }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchAdmissionRoadmap({
+  studentProfile,
+  topProgramIds,
+}: {
+  studentProfile: StudentProfile;
+  topProgramIds?: string[];
+}): Promise<AdmissionRoadmapPayload> {
+  return readApi<AdmissionRoadmapPayload>("/api/ai/admission-roadmap", {
+    body: JSON.stringify({ studentProfile, topProgramIds }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchAdvisorStatus(): Promise<AdvisorStatusPayload> {
+  return readApi<AdvisorStatusPayload>("/api/advisor/status");
 }
 
 async function readApi<T>(

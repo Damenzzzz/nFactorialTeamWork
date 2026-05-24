@@ -177,6 +177,19 @@ Use MCP as execution support for the solo workflow:
 
 MCP output should inform implementation notes and evidence. It should not be described as work done by other people.
 
+## AI-Native Product Features
+
+UniMatch AI now treats AI as part of the main admissions workflow, not only as a separate advisor chat. These features are implemented as solo role-based work and must not be documented as a multi-person handoff.
+
+- AI Profile Parser: turns a student's pasted study goal into editable profile fields for field, degree level, GPA, IELTS, SAT, budget, preferred countries, and scholarship preference.
+- AI Smart Search: converts natural-language catalog searches into program filters while keeping manual filters available.
+- AI Program Fit Explanation: explains a program's strengths, risks, missing requirements, and next steps using known catalog data and the current student profile.
+- AI Compare Summary: summarizes shortlisted programs across fit, tuition, requirements, scholarship signal, deadlines, and tradeoffs.
+- AI Admission Roadmap: turns recommendation results into a student-facing timeline, document checklist, score-improvement plan, and deadline advice.
+- Advisor tools: keep the conversational advisor grounded in catalog search, program comparison, requirements lookup, admission fit calculation, and preference normalization.
+
+OpenAI is used when configured for structured extraction and polished grounded summaries. The app must still run safely without OpenAI by using catalog-based logic. Public UI should stay student-facing and must not expose API keys, route names, MCP, Codex, Playwright, seed mode, provider errors, or internal implementation details.
+
 ## Output Contracts
 
 Every phase must finish with a short handoff note that includes:

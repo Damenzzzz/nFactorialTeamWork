@@ -18,6 +18,7 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
+import { AdmissionRoadmapPanel } from "@/components/AdmissionRoadmapPanel";
 import { AdvisorPanel } from "@/components/AdvisorPanel";
 import { EmptyState } from "@/components/EmptyState";
 import { HeroSection } from "@/components/HeroSection";
@@ -27,7 +28,9 @@ import { ProgramCard } from "@/components/ProgramCard";
 import { ProgramFilters } from "@/components/ProgramFilters";
 import { RecommendationResults } from "@/components/RecommendationResults";
 import { SectionHeader } from "@/components/SectionHeader";
+import { SmartSearchBar } from "@/components/SmartSearchBar";
 import {
+  fetchCompareSummary,
   fetchPrograms,
   fetchRecommendations,
   type ProgramsPayload,
@@ -37,6 +40,7 @@ import { formatCurrency, formatDeadline } from "@/lib/frontend/format";
 import type {
   ProgramFilters as ProgramFiltersType,
   ProgramWithAdmissions,
+  CompareSummaryPayload,
   StudentProfile,
 } from "@/lib/domain";
 
@@ -223,6 +227,10 @@ export function AppShell() {
     setCompareIds((current) => current.filter((id) => id !== programId));
   }
 
+  function handleSmartSearch(nextFilters: ProgramFiltersType) {
+    setFilters(nextFilters);
+  }
+
   function handleNav(target: string) {
     setMobileOpen(false);
     scrollToSection(target);
@@ -341,6 +349,12 @@ export function AppShell() {
               title="Explore universities and programs"
             />
             <div className="mt-8">
+              <SmartSearchBar
+                loading={programsLoading}
+                onApply={handleSmartSearch}
+              />
+            </div>
+            <div className="mt-5">
               <ProgramFilters
                 countries={countries}
                 fields={fields}
@@ -375,6 +389,7 @@ export function AppShell() {
                       key={record.program.id}
                       onToggleCompare={() => toggleCompare(record)}
                       record={record}
+                      studentProfile={studentProfile}
                     />
                   ))}
                 </div>
@@ -424,6 +439,10 @@ export function AppShell() {
                   loading={recommendationsLoading}
                   recommendations={recommendationPayload?.recommendations ?? []}
                 />
+                <AdmissionRoadmapPanel
+                  recommendations={recommendationPayload?.recommendations ?? []}
+                  studentProfile={studentProfile}
+                />
               </div>
             </div>
           </motion.section>
@@ -453,6 +472,7 @@ export function AppShell() {
           <CompareSection
             comparedPrograms={comparedPrograms}
             onRemove={removeCompare}
+            studentProfile={studentProfile}
           />
 
           <AdmissionGuideSection />
@@ -479,10 +499,40 @@ function NavButton({ label, onClick }: { label: string; onClick: () => void }) {
 function CompareSection({
   comparedPrograms,
   onRemove,
+  studentProfile,
 }: {
   comparedPrograms: ProgramWithAdmissions[];
   onRemove: (programId: string) => void;
+  studentProfile?: StudentProfile;
 }) {
+  const [summary, setSummary] = useState<CompareSummaryPayload>();
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState<string>();
+
+  async function handleSummary() {
+    if (comparedPrograms.length < 2) {
+      setSummaryError("Add at least two programs to compare.");
+      return;
+    }
+
+    setSummaryLoading(true);
+    setSummaryError(undefined);
+
+    try {
+      const payload = await fetchCompareSummary({
+        programIds: comparedPrograms.map((record) => record.program.id),
+        studentProfile,
+      });
+      setSummary(payload);
+    } catch {
+      setSummaryError(
+        "We could not generate the comparison brief right now. Please try again in a moment.",
+      );
+    } finally {
+      setSummaryLoading(false);
+    }
+  }
+
   return (
     <motion.section
       className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-6 lg:px-8"
@@ -494,12 +544,37 @@ function CompareSection({
       whileInView="show"
     >
       <SectionHeader
+        action={
+          <button
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={summaryLoading || comparedPrograms.length < 2}
+            onClick={handleSummary}
+            type="button"
+          >
+            {summaryLoading ? (
+              <span className="size-4 animate-spin rounded-full border-2 border-slate-950/20 border-t-slate-950" />
+            ) : (
+              <Sparkles aria-hidden="true" className="size-4" />
+            )}
+            Generate AI comparison
+          </button>
+        }
         description="Shortlist up to three programs and compare cost, requirements, scholarship availability, and deadlines side by side."
         eyebrow="Compare"
         title="Compare your top options"
       />
 
       <div className="mt-8">
+        {summaryError ? (
+          <p className="mb-4 rounded-lg border border-rose-300/20 bg-rose-300/10 p-4 text-sm leading-6 text-rose-100">
+            {summaryError}
+          </p>
+        ) : comparedPrograms.length < 2 ? (
+          <p className="mb-4 rounded-lg border border-cyan-300/15 bg-cyan-300/10 p-4 text-sm leading-6 text-cyan-50">
+            Add at least two programs to generate a decision brief.
+          </p>
+        ) : null}
+
         {comparedPrograms.length ? (
           <div className="grid gap-4 lg:grid-cols-3">
             {comparedPrograms.map((record) => (
@@ -572,7 +647,54 @@ function CompareSection({
           />
         )}
       </div>
+
+      {summary ? <CompareDecisionBrief summary={summary} /> : null}
     </motion.section>
+  );
+}
+
+function CompareDecisionBrief({ summary }: { summary: CompareSummaryPayload }) {
+  return (
+    <section className="mt-6 rounded-lg border border-cyan-300/15 bg-cyan-300/10 p-5 shadow-2xl shadow-black/20">
+      <div className="flex items-center gap-2">
+        <Sparkles aria-hidden="true" className="size-4 text-cyan-100" />
+        <h3 className="text-lg font-semibold text-white">AI comparison brief</h3>
+      </div>
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
+        <DecisionRow label="Best overall" value={summary.bestOverall} />
+        <DecisionRow label="Safest option" value={summary.safestOption} />
+        <DecisionRow label="Best value" value={summary.bestValue} />
+        <DecisionRow
+          label="Scholarship friendly"
+          value={summary.scholarshipFriendlyOption}
+        />
+      </div>
+      {summary.tradeoffs.length ? (
+        <div className="mt-5 rounded-lg border border-white/10 bg-black/20 p-4">
+          <h4 className="text-sm font-semibold uppercase text-slate-300">
+            Tradeoffs
+          </h4>
+          <ul className="mt-3 space-y-2">
+            {summary.tradeoffs.map((tradeoff) => (
+              <li className="flex gap-2 text-sm leading-6 text-slate-300" key={tradeoff}>
+                <span className="mt-2 size-1.5 shrink-0 rounded-full bg-cyan-200/70" />
+                <span>{tradeoff}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      <p className="mt-5 text-sm leading-6 text-cyan-50">{summary.finalAdvice}</p>
+    </section>
+  );
+}
+
+function DecisionRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-white/10 bg-black/20 p-4">
+      <p className="text-xs font-semibold uppercase text-slate-500">{label}</p>
+      <p className="mt-2 text-sm leading-6 text-white">{value}</p>
+    </div>
   );
 }
 

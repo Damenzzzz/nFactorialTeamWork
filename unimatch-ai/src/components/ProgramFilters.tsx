@@ -64,7 +64,12 @@ export function ProgramFilters({
             aria-label="Filter by country"
             className={controlClass}
             disabled={loading}
-            onChange={(event) => update({ country: valueOrUndefined(event.target.value) })}
+            onChange={(event) =>
+              update({
+                countries: undefined,
+                country: valueOrUndefined(event.target.value),
+              })
+            }
             value={filters.country ?? ""}
           >
             <option value="">All countries</option>
@@ -159,6 +164,12 @@ export function ProgramFilters({
           </button>
         </FilterField>
       </div>
+      {filters.countries?.length ? (
+        <p className="mt-4 rounded-lg border border-cyan-300/15 bg-cyan-300/10 px-4 py-3 text-sm leading-6 text-cyan-50">
+          Searching across {filters.countries.join(", ")}. Choose a country above
+          to narrow the results.
+        </p>
+      ) : null}
     </div>
   );
 }
