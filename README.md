@@ -11,15 +11,22 @@ The app lives in [`unimatch-ai`](./unimatch-ai). The root repository stores the 
 
 ## Current State
 
-This repository currently contains a Next.js starter app and planning artifacts. Application features are intentionally not implemented in this documentation pass.
+This repository contains a working Next.js App Router admissions advisor application plus planning and evidence artifacts. The app now includes a student-facing admissions interface, local catalog data, backend recommendation APIs, and a tool-based AI advisor route with a deterministic fallback when OpenAI is not configured.
 
-Existing scaffold:
+Implemented application pieces:
 
 - `unimatch-ai/`: Next.js App Router app with TypeScript and Tailwind CSS
+- `GET /api/health`: reports service status, data-source mode, and AI availability without exposing secrets
+- `GET /api/programs`: returns filterable catalog programs with requirements
+- `POST /api/recommendations`: returns ranked matches using local recommendation logic
+- `POST /api/advisor`: returns structured advisor answers using internal tools and OpenAI SDK tool-calling when configured
+- local deterministic advisor fallback when `OPENAI_API_KEY` is absent
 - `ai-rules/`: role-specific AI execution rules
-- `docs/evidence/`: placeholders for implementation evidence
+- `docs/evidence/`: implementation evidence and verification notes
 - `README.md`: product and implementation plan
 - `WORKFLOW.md`: solo role-based sprint workflow
+
+Playwright is still a planned deliverable; no project test script is defined yet.
 
 ## Target Product
 
@@ -239,16 +246,17 @@ QA contract:
 
 ## Development Checklist
 
-- [ ] Replace starter UI with UniMatch AI interface
-- [ ] Add domain types and validation
-- [ ] Add local seed university/program data
+- [x] Replace starter UI with UniMatch AI interface
+- [x] Add domain types and validation
+- [x] Add local seed university/program data
 - [ ] Add Supabase-ready data repository with seed fallback
-- [ ] Add backend API routes
-- [ ] Add tool-based advisor orchestration
-- [ ] Add missing-key AI fallback response
+- [x] Add backend API routes
+- [x] Add tool-based advisor orchestration
+- [x] Add missing-key AI fallback response
 - [ ] Add Playwright tests
-- [ ] Run lint, build, and tests
-- [ ] Capture evidence in `docs/evidence/`
+- [x] Run lint and build
+- [ ] Run tests
+- [x] Capture evidence in `docs/evidence/`
 - [ ] Deploy to Vercel or document deployment blocker
 
 ## Local Commands

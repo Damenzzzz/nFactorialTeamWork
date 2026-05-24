@@ -63,6 +63,17 @@ export interface StudentProfile {
   language?: string;
 }
 
+export interface AdvisorStudentProfile {
+  intendedField?: string;
+  degreeLevel?: DegreeLevel;
+  gpa?: number;
+  ielts?: number;
+  sat?: number;
+  maxTuition?: number;
+  preferredCountries?: string[];
+  scholarshipRequired?: boolean;
+}
+
 export interface ProgramWithAdmissions {
   university: University;
   program: Program;
@@ -94,6 +105,59 @@ export interface DataRepositoryStatus {
   supabaseConfigured: boolean;
   supabaseMissingVariables: string[];
   note: string;
+}
+
+export type AdvisorToolName =
+  | "searchPrograms"
+  | "comparePrograms"
+  | "getProgramRequirements"
+  | "calculateAdmissionChance"
+  | "saveStudentPreferences";
+
+export interface ComparedProgram {
+  programId: string;
+  universityName: string;
+  programName: string;
+  country: string;
+  city: string;
+  tuitionUsdPerYear: number;
+  applicationDeadline: string;
+  minIelts: number;
+  minGpa: number;
+  minSat?: number;
+  scholarshipAvailable: boolean;
+  fitScore?: number;
+  fitSummary: string;
+  risks: string[];
+}
+
+export interface SavedStudentPreferences {
+  intendedField?: string;
+  degreeLevel?: DegreeLevel;
+  gpa?: number;
+  ielts?: number;
+  sat?: number;
+  maxTuition?: number;
+  preferredCountries?: string[];
+  scholarshipRequired?: boolean;
+  shortlistedProgramIds: string[];
+  note: string;
+}
+
+export interface AdvisorRequest {
+  message: string;
+  studentProfile?: AdvisorStudentProfile;
+  shortlistedProgramIds?: string[];
+}
+
+export interface AdvisorResponsePayload {
+  answer: string;
+  toolsUsed: AdvisorToolName[];
+  recommendations?: Recommendation[];
+  comparedPrograms?: ComparedProgram[];
+  suggestedQuestions?: string[];
+  savedPreferences?: SavedStudentPreferences;
+  aiAvailable?: boolean;
 }
 
 export interface ApiResponse<T> {

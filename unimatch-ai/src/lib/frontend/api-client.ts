@@ -1,4 +1,6 @@
 import type {
+  AdvisorRequest,
+  AdvisorResponsePayload,
   ApiResponse,
   ProgramFilters,
   ProgramWithAdmissions,
@@ -52,6 +54,18 @@ export async function fetchRecommendations(
 ): Promise<RecommendationsPayload> {
   return readApi<RecommendationsPayload>("/api/recommendations", {
     body: JSON.stringify(profile),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+  });
+}
+
+export async function fetchAdvisorResponse(
+  request: AdvisorRequest,
+): Promise<AdvisorResponsePayload> {
+  return readApi<AdvisorResponsePayload>("/api/advisor", {
+    body: JSON.stringify(request),
     headers: {
       "Content-Type": "application/json",
     },

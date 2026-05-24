@@ -45,11 +45,11 @@ function buildRecommendation(
 
   if (profile.gpa >= requirement.minGpa) {
     score += 18;
-    fitReasons.push(`GPA meets the seed minimum of ${requirement.minGpa.toFixed(1)}.`);
+    fitReasons.push(`GPA meets the catalog minimum of ${requirement.minGpa.toFixed(1)}.`);
   } else {
     const gap = Number((requirement.minGpa - profile.gpa).toFixed(2));
     score -= Math.min(25, gap * 18);
-    risks.push(`GPA is below the seed minimum by ${gap.toFixed(2)}.`);
+    risks.push(`GPA is below the catalog minimum by ${gap.toFixed(2)}.`);
     missingRequirements.push(
       `Improve GPA or confirm whether alternative academic evidence can offset a ${gap.toFixed(2)} gap.`,
     );
@@ -58,11 +58,11 @@ function buildRecommendation(
   if (typeof profile.ielts === "number") {
     if (profile.ielts >= requirement.minIelts) {
       score += 10;
-      fitReasons.push(`IELTS score meets the seed minimum of ${requirement.minIelts}.`);
+      fitReasons.push(`IELTS score meets the catalog minimum of ${requirement.minIelts}.`);
     } else {
       const gap = Number((requirement.minIelts - profile.ielts).toFixed(1));
       score -= Math.min(18, gap * 8);
-      risks.push(`IELTS is below the seed minimum by ${gap.toFixed(1)}.`);
+      risks.push(`IELTS is below the catalog minimum by ${gap.toFixed(1)}.`);
       missingRequirements.push(
         `Raise IELTS to at least ${requirement.minIelts} or verify accepted alternatives.`,
       );
@@ -70,7 +70,7 @@ function buildRecommendation(
   } else {
     score -= 8;
     missingRequirements.push(
-      `Provide IELTS or accepted English proficiency evidence for a seed minimum of ${requirement.minIelts}.`,
+      `Provide IELTS or accepted English proficiency evidence for a catalog minimum of ${requirement.minIelts}.`,
     );
   }
 
@@ -78,11 +78,11 @@ function buildRecommendation(
     if (typeof profile.sat === "number") {
       if (profile.sat >= requirement.minSat) {
         score += 8;
-        fitReasons.push(`SAT score meets the seed minimum of ${requirement.minSat}.`);
+        fitReasons.push(`SAT score meets the catalog minimum of ${requirement.minSat}.`);
       } else {
         const gap = requirement.minSat - profile.sat;
         score -= Math.min(16, gap / 25);
-        risks.push(`SAT is below the seed minimum by ${gap} points.`);
+        risks.push(`SAT is below the catalog minimum by ${gap} points.`);
         missingRequirements.push(
           `Raise SAT to at least ${requirement.minSat} or verify accepted alternatives.`,
         );
@@ -90,7 +90,7 @@ function buildRecommendation(
     } else {
       score -= 6;
       missingRequirements.push(
-        `Submit SAT or accepted equivalent test evidence for a seed minimum of ${requirement.minSat}.`,
+        `Submit SAT or accepted equivalent test evidence for a catalog minimum of ${requirement.minSat}.`,
       );
     }
   }
@@ -124,10 +124,10 @@ function buildRecommendation(
   if (profile.scholarshipRequired) {
     if (program.scholarshipsAvailable) {
       score += 8;
-      fitReasons.push("Scholarship options are listed in the seed data.");
+      fitReasons.push("Scholarship options are listed in the catalog.");
     } else {
       score -= 16;
-      risks.push("No program-level scholarship option is marked in the seed data.");
+      risks.push("No program-level scholarship option is marked in the catalog.");
       missingRequirements.push("Identify external funding or a lower-cost option.");
     }
   } else if (program.scholarshipsAvailable) {
@@ -168,7 +168,7 @@ function buildNextSteps(
   const nextSteps = [
     `Verify current requirements and deadline on ${university.name}'s official website.`,
     `Prepare required documents: ${requirement.requiredDocuments.join(", ")}.`,
-    `Confirm the ${program.applicationDeadline} seed deadline against the live admissions page.`,
+    `Confirm the ${program.applicationDeadline} catalog deadline against the live admissions page.`,
   ];
 
   if (program.scholarshipsAvailable) {

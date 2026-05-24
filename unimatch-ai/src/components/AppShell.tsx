@@ -18,6 +18,7 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
+import { AdvisorPanel } from "@/components/AdvisorPanel";
 import { EmptyState } from "@/components/EmptyState";
 import { HeroSection } from "@/components/HeroSection";
 import { LoadingState } from "@/components/LoadingState";
@@ -48,6 +49,7 @@ const navItems = [
   { label: "Overview", target: "top" },
   { label: "Universities", target: "universities" },
   { label: "Match Score", target: "match-score" },
+  { label: "AI Advisor", target: "ai-advisor" },
   { label: "Compare", target: "compare" },
   { label: "Admission Guide", target: "admission-guide" },
   { label: "FAQ", target: "faq" },
@@ -129,6 +131,7 @@ export function AppShell() {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [recommendationPayload, setRecommendationPayload] =
     useState<RecommendationsPayload>();
+  const [studentProfile, setStudentProfile] = useState<StudentProfile>();
   const [recommendationsLoading, setRecommendationsLoading] = useState(false);
   const [recommendationsError, setRecommendationsError] = useState<string>();
 
@@ -187,6 +190,7 @@ export function AppShell() {
   async function handleProfileSubmit(profile: StudentProfile) {
     setRecommendationsLoading(true);
     setRecommendationsError(undefined);
+    setStudentProfile(profile);
 
     try {
       const payload = await fetchRecommendations(profile);
@@ -421,6 +425,28 @@ export function AppShell() {
                   recommendations={recommendationPayload?.recommendations ?? []}
                 />
               </div>
+            </div>
+          </motion.section>
+
+          <motion.section
+            className="mx-auto w-full max-w-7xl px-5 py-20 sm:px-6 lg:px-8"
+            id="ai-advisor"
+            initial="hidden"
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            variants={sectionMotion}
+            viewport={{ once: true, margin: "-80px" }}
+            whileInView="show"
+          >
+            <SectionHeader
+              description="Ask a focused admissions question and receive guidance grounded in your profile, shortlist, and the known program catalog."
+              eyebrow="AI Advisor"
+              title="Get a personalized admissions answer"
+            />
+            <div className="mt-8">
+              <AdvisorPanel
+                shortlistedProgramIds={compareIds}
+                studentProfile={studentProfile}
+              />
             </div>
           </motion.section>
 
