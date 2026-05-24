@@ -103,7 +103,7 @@ const advisorTools: ChatCompletionTool[] = [
   {
     function: {
       description:
-        "Calculate admission fit by reusing UniMatch ranking logic against catalog requirements.",
+        "Calculate admission fit from UniMatch catalog requirements and the student profile.",
       name: "calculateAdmissionChance",
       parameters: {
         additionalProperties: false,
@@ -120,7 +120,7 @@ const advisorTools: ChatCompletionTool[] = [
   {
     function: {
       description:
-        "Normalize student preferences for this request without writing to an external database.",
+        "Apply student preferences to this advisor answer.",
       name: "saveStudentPreferences",
       parameters: {
         additionalProperties: false,
@@ -145,13 +145,13 @@ export async function getAdvisorResponse(
   };
 
   if (!process.env.OPENAI_API_KEY) {
-    return getLocalAdvisorFallback(context, "missing-key");
+    return getLocalAdvisorFallback(context);
   }
 
   try {
     return await getOpenAIAdvisorResponse(context);
   } catch {
-    return getLocalAdvisorFallback(context, "provider-error");
+    return getLocalAdvisorFallback(context);
   }
 }
 
@@ -228,12 +228,11 @@ async function getOpenAIAdvisorResponse(
     };
   }
 
-  return getLocalAdvisorFallback(context, "provider-error");
+  return getLocalAdvisorFallback(context);
 }
 
 async function getLocalAdvisorFallback(
   context: AdvisorToolContext,
-  reason: "missing-key" | "provider-error",
 ): Promise<AdvisorResponsePayload> {
   const handlers = createAdvisorToolHandlers(context);
   const toolsUsed = new Set<AdvisorToolName>();
@@ -274,7 +273,6 @@ async function getLocalAdvisorFallback(
     answer: buildFallbackAnswer({
       chance,
       compared,
-      reason,
       requirements,
       search,
     }),
@@ -361,7 +359,7 @@ function parseModelAdvisorResponse(content: string | null): ModelAdvisorResponse
   if (!content) {
     return {
       answer:
-        "I checked the UniMatch local catalog, but I could not produce a complete advisor answer. Please try a more specific question.",
+        "I checked the UniMatch program catalog, but I need a more specific question to prepare a useful answer.",
       suggestedQuestions: buildSuggestedQuestions(false, false),
     };
   }
@@ -392,22 +390,17 @@ function parseModelAdvisorResponse(content: string | null): ModelAdvisorResponse
 function buildFallbackAnswer({
   chance,
   compared,
-  reason,
   requirements,
   search,
 }: {
   chance: CalculateAdmissionChanceOutput;
   compared?: CompareProgramsOutput;
-  reason: "missing-key" | "provider-error";
   requirements?: ProgramRequirementsOutput;
   search?: SearchProgramsOutput;
 }): string {
-  const lead =
-    reason === "missing-key"
-      ? "AI guidance is not configured, so I used deterministic UniMatch tools instead."
-      : "The AI service was unavailable, so I used deterministic UniMatch tools instead.";
+  const lead = "I used the UniMatch program catalog to prepare this answer.";
   const catalogNote =
-    "Recommendations are based only on the UniMatch local catalog and should be verified on official university pages.";
+    "This guidance is based on available program data. Always verify final requirements on official university pages.";
 
   if (chance.recommendations.length) {
     const top = chance.recommendations
@@ -433,10 +426,10 @@ function buildFallbackAnswer({
       .map((record) => `${record.program.name} at ${record.university.name}`)
       .join("; ");
 
-    return `${lead} ${catalogNote} I found catalog programs to explore: ${matches}. Add intended field, degree level, and GPA to calculate admission fit.`;
+    return `${lead} ${catalogNote} I found programs to explore: ${matches}. For a more precise answer, calculate your admission fit first.`;
   }
 
-  return `${lead} ${catalogNote} I do not have enough profile detail or matching catalog results yet. Add intended field, degree level, GPA, budget, and preferred countries for a stronger answer.`;
+  return `${lead} ${catalogNote} I need a little more profile detail to make this useful. Fill in your intended field, degree level, GPA, budget, and preferred countries, then calculate your admission fit.`;
 }
 
 function buildSuggestedQuestions(
@@ -460,9 +453,9 @@ function buildSuggestedQuestions(
   }
 
   return [
-    "Which programs fit my field and budget?",
-    "What GPA and IELTS should I target?",
-    "Can you compare my shortlist?",
+    "Which fields and countries should I start with?",
+    "What GPA and IELTS targets should I plan for?",
+    "What should I add to my profile first?",
   ];
 }
 

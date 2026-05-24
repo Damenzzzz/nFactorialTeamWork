@@ -205,7 +205,7 @@ export async function searchPrograms(
   return {
     count: filtered.length,
     dataSource: repository.getStatus().activeDataSource,
-    note: "Results are limited to programs in the UniMatch local catalog.",
+    note: "Results are limited to programs currently available in the UniMatch program catalog.",
     programs: filtered,
   };
 }
@@ -292,7 +292,7 @@ export async function calculateAdmissionChance(
       chances: [],
       missingProfileFields,
       note:
-        "Admission chance needs intendedField, degreeLevel, and GPA before the ranking logic can run.",
+        "Admission fit needs intended field, degree level, and GPA before it can be estimated.",
       recommendations: [],
     };
   }
@@ -326,7 +326,7 @@ export async function calculateAdmissionChance(
     })),
     missingProfileFields: [],
     note:
-      "Admission chances reuse the existing UniMatch ranking logic and local catalog requirements.",
+      "Admission fit estimates are based on available UniMatch program requirements.",
     recommendations,
   };
 }
@@ -343,7 +343,7 @@ export async function saveStudentPreferences(
     intendedField: normalizeOptionalText(profile.intendedField),
     maxTuition: profile.maxTuition,
     note:
-      "Preferences are normalized for this advisor request only; no external database write is performed.",
+      "Preferences were applied to this advisor answer.",
     preferredCountries: profile.preferredCountries?.map((country) => country.trim()),
     sat: profile.sat,
     scholarshipRequired: profile.scholarshipRequired,

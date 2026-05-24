@@ -12,7 +12,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Badge } from "@/components/Badge";
-import { EmptyState } from "@/components/EmptyState";
 import { fetchAdvisorResponse } from "@/lib/frontend/api-client";
 import { formatCurrency, formatDeadline } from "@/lib/frontend/format";
 import type {
@@ -28,14 +27,14 @@ interface AdvisorPanelProps {
 }
 
 const defaultQuestion =
-  "Which programs are strongest for my profile, and what should I improve first?";
+  "Which programs should I consider first, and what should I prepare next?";
 
 const toolLabels: Record<AdvisorToolName, string> = {
-  calculateAdmissionChance: "Admission fit calculation",
-  comparePrograms: "Shortlist comparison",
-  getProgramRequirements: "Requirement lookup",
-  saveStudentPreferences: "Preference normalization",
-  searchPrograms: "Catalog search",
+  calculateAdmissionChance: "Admission fit reviewed",
+  comparePrograms: "Shortlist compared",
+  getProgramRequirements: "Requirements checked",
+  saveStudentPreferences: "Profile preferences applied",
+  searchPrograms: "Program catalog searched",
 };
 
 export function AdvisorPanel({
@@ -60,8 +59,10 @@ export function AdvisorPanel({
       return `${shortlistedProgramIds.length} shortlisted option(s)`;
     }
 
-    return "Ask with or without a saved profile";
+    return "Profile not calculated yet";
   }, [shortlistedProgramIds.length, studentProfile]);
+
+  const needsProfile = !studentProfile;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -94,7 +95,7 @@ export function AdvisorPanel({
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+    <div className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr]">
       <form
         className="rounded-lg border border-white/10 bg-white/[0.06] p-5 shadow-2xl shadow-black/25 backdrop-blur-xl sm:p-6"
         onSubmit={handleSubmit}
@@ -118,6 +119,18 @@ export function AdvisorPanel({
           </div>
         </div>
 
+        {needsProfile ? (
+          <div className="mt-5 flex gap-3 rounded-lg border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm leading-6 text-cyan-50">
+            <Lightbulb
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 text-cyan-100"
+            />
+            <span>
+              For a more precise answer, calculate your admission fit first.
+            </span>
+          </div>
+        ) : null}
+
         <label className="mt-6 block">
           <span className="text-sm font-medium text-slate-200">
             Your question
@@ -133,7 +146,7 @@ export function AdvisorPanel({
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-slate-400">
-            Answers stay limited to the known program catalog.
+            Answers use available program data and your saved fit profile when available.
           </p>
           <button
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-cyan-200 px-5 text-sm font-semibold text-slate-950 transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
@@ -179,11 +192,7 @@ export function AdvisorPanel({
             response={response}
           />
         ) : (
-          <EmptyState
-            description="Ask about program fit, requirements, scholarships, or compare your shortlist to receive a catalog-grounded answer."
-            icon={MessageSquareText}
-            title="Your advisor answer will appear here"
-          />
+          <AdvisorEmptyState hasProfile={Boolean(studentProfile)} />
         )}
       </section>
     </div>
@@ -198,28 +207,32 @@ function AdvisorResponse({
   response: AdvisorResponsePayload;
 }) {
   return (
-    <div>
-      <div className="flex items-start gap-4">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-cyan-300/10 text-cyan-100 ring-1 ring-cyan-300/20">
-          <Bot aria-hidden="true" className="size-5" />
-        </span>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-xl font-semibold text-white">Advisor answer</h3>
-            {response.aiAvailable === false ? (
-              <Badge tone="amber">Catalog fallback</Badge>
-            ) : (
-              <Badge tone="emerald">Tool-grounded</Badge>
-            )}
+    <div className="space-y-7">
+      <div className="rounded-lg border border-cyan-300/15 bg-cyan-300/10 p-5">
+        <div className="flex items-start gap-4">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-cyan-300/10 text-cyan-100 ring-1 ring-cyan-300/20">
+            <Bot aria-hidden="true" className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-xl font-semibold text-white">Advisor answer</h3>
+              <Badge tone={response.aiAvailable === false ? "amber" : "emerald"}>
+                Catalog-based answer
+              </Badge>
+            </div>
+            <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-300">
+              {response.answer}
+            </p>
+            <p className="mt-4 rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-xs leading-5 text-slate-400">
+              This guidance is based on available program data. Always verify
+              final requirements on official university pages.
+            </p>
           </div>
-          <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-300">
-            {response.answer}
-          </p>
         </div>
       </div>
 
       {response.recommendations?.length ? (
-        <div className="mt-7 border-t border-white/10 pt-6">
+        <div>
           <div className="flex items-center gap-2">
             <Lightbulb aria-hidden="true" className="size-4 text-amber-100" />
             <h4 className="text-sm font-semibold uppercase text-slate-300">
@@ -238,14 +251,14 @@ function AdvisorResponse({
       ) : null}
 
       {response.suggestedQuestions?.length ? (
-        <div className="mt-7 border-t border-white/10 pt-6">
+        <div className="rounded-lg border border-white/10 bg-black/20 p-4">
           <h4 className="text-sm font-semibold uppercase text-slate-300">
-            Suggested follow-up
+            Suggested next questions
           </h4>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
             {response.suggestedQuestions.map((question) => (
               <button
-                className="rounded-lg border border-white/10 bg-white/[0.055] px-3 py-2 text-left text-sm text-slate-200 transition hover:border-cyan-200/30 hover:bg-white/[0.09] hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950"
+                className="min-h-16 rounded-lg border border-white/10 bg-white/[0.055] px-3 py-3 text-left text-sm leading-5 text-slate-200 transition hover:border-cyan-200/30 hover:bg-white/[0.09] hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950"
                 key={question}
                 onClick={() => onSuggestedQuestion(question)}
                 type="button"
@@ -257,14 +270,17 @@ function AdvisorResponse({
         </div>
       ) : null}
 
-      <details className="group mt-7 rounded-lg border border-white/10 bg-black/20 p-4">
+      <details className="group rounded-lg border border-white/10 bg-black/20 p-4">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-slate-300">
-          <span>How this answer was generated</span>
+          <span>Data used for this answer</span>
           <ChevronDown
             aria-hidden="true"
             className="size-4 transition group-open:rotate-180"
           />
         </summary>
+        <p className="mt-4 text-sm leading-6 text-slate-400">
+          I used the UniMatch program catalog to prepare this answer.
+        </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {response.toolsUsed.length ? (
             response.toolsUsed.map((tool) => (
@@ -274,11 +290,29 @@ function AdvisorResponse({
             ))
           ) : (
             <span className="text-sm text-slate-400">
-              No catalog tools were needed for this answer.
+              This answer used the information available in your question.
             </span>
           )}
         </div>
       </details>
+    </div>
+  );
+}
+
+function AdvisorEmptyState({ hasProfile }: { hasProfile: boolean }) {
+  return (
+    <div className="flex min-h-80 flex-col justify-center rounded-lg border border-dashed border-white/15 bg-black/20 p-6 text-center">
+      <div className="mx-auto flex size-14 items-center justify-center rounded-lg bg-cyan-300/10 text-cyan-100 ring-1 ring-cyan-300/20">
+        <MessageSquareText aria-hidden="true" className="size-6" />
+      </div>
+      <h3 className="mt-5 text-xl font-semibold text-white">
+        Ask for admissions guidance
+      </h3>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-400">
+        {hasProfile
+          ? "Ask about your best-fit programs, missing requirements, scholarships, or which option to compare next."
+          : "For a more precise answer, calculate your admission fit first. You can still ask a general planning question now."}
+      </p>
     </div>
   );
 }

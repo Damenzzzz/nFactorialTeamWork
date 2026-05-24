@@ -142,14 +142,18 @@ export function ProfileForm({
         </FieldShell>
 
         <FieldShell label="Degree level">
-          <div aria-label="Degree level" className="grid grid-cols-3 gap-2" role="group">
+          <div
+            aria-label="Degree level"
+            className="grid min-h-12 grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-black/25 p-1"
+            role="group"
+          >
             {degreeLevels.map((level) => (
               <button
                 className={cn(
-                  "h-11 rounded-lg border px-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950",
+                  "min-h-10 min-w-0 rounded-md px-2 text-center text-sm font-semibold leading-none whitespace-nowrap transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-slate-950",
                   values.degreeLevel === level
-                    ? "border-cyan-200 bg-cyan-200 text-slate-950"
-                    : "border-white/10 bg-white/[0.055] text-slate-200 hover:bg-white/[0.09]",
+                    ? "bg-cyan-200 text-slate-950 shadow-lg shadow-cyan-950/20"
+                    : "text-slate-300 hover:bg-white/[0.075] hover:text-white",
                 )}
                 disabled={loading}
                 key={level}
