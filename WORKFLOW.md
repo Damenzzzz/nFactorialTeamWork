@@ -190,6 +190,38 @@ UniMatch AI now treats AI as part of the main admissions workflow, not only as a
 
 OpenAI is used when configured for structured extraction and polished grounded summaries. The app must still run safely without OpenAI by using catalog-based logic. Public UI should stay student-facing and must not expose API keys, route names, MCP, Codex, Playwright, seed mode, provider errors, or internal implementation details.
 
+## QA Engineer & Workflow Master Phase
+
+Playwright E2E coverage is now configured inside `unimatch-ai/` with `@playwright/test`, `playwright.config.ts`, and tests under `tests/e2e/`.
+
+Commands for this phase:
+
+```bash
+cd unimatch-ai
+npm run lint
+npm run build
+npm run test:e2e
+npm run test:e2e:ui
+```
+
+What the E2E suite tests:
+
+- homepage smoke path with brand/title and primary CTA
+- catalog rendering and filter controls
+- field filter behavior with valid result state
+- admission profile submission and ranked recommendation output
+- compare/shortlist updates after selecting two programs
+- advisor question flow without requiring a real OpenAI call
+
+Known limitations:
+
+- tests currently run against Chromium only
+- visual regression and mobile viewport checks are not yet included
+- Supabase-backed data mode is not covered because the project still works from local catalog data by default
+- deployment is documented but not executed in this repository state
+
+AI was used for QA as a solo implementation aid to design test coverage, inspect selectors, and update evidence. It does not represent a separate tester, reviewer, or approval.
+
 ## Output Contracts
 
 Every phase must finish with a short handoff note that includes:
@@ -248,12 +280,12 @@ Role phase: <Frontend Developer | Backend Developer | AI Engineer | QA Engineer 
 - [ ] Add Supabase-ready repository layer
 - [ ] Add OpenAI tool-calling advisor
 - [ ] Add missing-key fallback
-- [ ] Add Playwright tests
-- [ ] Run lint
-- [ ] Run build
-- [ ] Run tests
+- [x] Add Playwright tests
+- [x] Run lint
+- [x] Run build
+- [x] Run tests
 - [ ] Capture screenshots and API outputs
-- [ ] Document deployment or blockers
+- [x] Document deployment or blockers
 
 ## Definition of Done
 

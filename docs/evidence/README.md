@@ -1,10 +1,10 @@
-# Evidence Placeholders
+# Evidence
 
-This directory stores proof collected during implementation and QA. The current files are placeholders and planning notes only; feature evidence should be captured after the app is implemented.
+This directory stores proof collected during implementation and QA. Evidence files should describe actual command results, local checks, deployment status, or clear blockers.
 
 Do not include secrets, private tokens, Supabase service keys, personal account data, or hidden prompts in evidence files.
 
-## Planned Evidence Files
+## Evidence Files
 
 Frontend:
 
@@ -26,9 +26,12 @@ AI:
 
 QA and deployment:
 
-- `playwright-summary.txt`: Playwright run summary
-- `lint-build.txt`: lint and build command summary
-- `vercel-deployment.txt`: deployment URL or deployment blocker
+- `qa-checklist.md`: QA scope and coverage notes
+- `test-results.md`: lint, build, and Playwright command summary
+- `deployment-checklist.md`: deployment settings and current deployment status
+- `playwright-summary.txt`: optional raw Playwright run summary
+- `lint-build.txt`: optional raw lint and build command summary
+- `vercel-deployment.txt`: optional deployment URL or deployment blocker
 
 ## Capture Rules
 
